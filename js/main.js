@@ -57,7 +57,15 @@ var video = document.getElementById("slider");
 		$(".action").addClass('more');
 	});
 
+	$(".castInvestigate3").click(function(){
+		$(".action").removeClass('investigate more');
+	});
+
 	$(".videoImage").click(function(){
+		var audio = document.getElementById("audio-player");
+		$('body').removeClass("audio-on");
+		$('body').addClass("audio-off");
+		audio.pause();
 		$(this).fadeOut();
 		slider.play();
 	});
