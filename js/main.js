@@ -155,10 +155,16 @@ if($(window).length) {
 	}
 
 	function videoURL(hmmm){
+		var audio = document.getElementById("audio-player");
 		var video = document.getElementById("slider");
 		video.volume = 0.4;
-			document.getElementById("slider").src = hmmm;
-			video.play();
+		document.getElementById("slider").src = hmmm;
+
+		$('body').removeClass("audio-on");
+		$('body').addClass("audio-off");
+		audio.pause();
+		$(".videoImage").fadeOut();
+		video.play();
 		}
 /*=================ost sound end================*/
 

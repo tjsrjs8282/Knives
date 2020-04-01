@@ -866,6 +866,7 @@ body.audio-on .soundBtnBox span:nth-child(6){
     position: relative;
     z-index: 9998;
     transition: 0.4s;
+    text-shadow: 1px 2px 5px;
 }
 .castInvestigate2 p{
     z-index: 9999;
