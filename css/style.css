@@ -121,7 +121,7 @@ body.audio-on .soundBtnBox span:nth-child(6){ animation: soundBar5 1s infinite l
 .snsBtn.active li:nth-child(1){ transform: scale(1); opacity: 1; left: -110px;}
 .snsBtn.active li:nth-child(2){ transform: scale(1); opacity: 1; left: -80px; top: -80px;}
 .snsBtn.active li:nth-child(3){ transform: scale(1); opacity: 1; top: -110px;}
-.snsBtn li a{ font-size: 1.5em; color: #efc900; display: block; line-height: 50px;}
+.snsBtn li a{ font-size: 1.5em; color: #efc900; display: block; line-height: 50px; transition: .4s ease;}
 .snsBtn li a:hover{ color: #fff;}
 /*================sns btn end================*/
 /*========================base end=======================*/
@@ -212,11 +212,11 @@ body.audio-on .soundBtnBox span:nth-child(6){ animation: soundBar5 1s infinite l
 @keyframes investigateBtn3{ to{left: 200px;} }
 .castInvestigate3 p,
 .castInvestigate2 p,
-.castInvestigate p{ font-size: 2em; color: #000; font-weight: bold; position: relative; z-index: 9998; transition: 0.4s; text-shadow: 1px 2px 5px;}
-.castInvestigate2 p{z-index: 9999;}
+.castInvestigate p{ font-size: 2em; color: #fff; font-weight: bold; position: relative; z-index: 9998; transition: 0.4s; text-shadow: 1px 2px 5px #000;}
+.castInvestigate2 p{z-index: 9999; }
 .castInvestigate3 p:hover,
 .castInvestigate2 p:hover,
-.castInvestigate p:hover{font-size: 2.1em;}
+.castInvestigate p:hover{text-shadow: 1px 2px 5px #000;  color: #000;}
 .castInvestigate3 p:after,
 .castInvestigate2 p:after,
 .castInvestigate p:after{ animation:castMagnifying 0.5s 1s forwards linear; position:absolute; top: -250px; left: -479px; content: ""; display: block;    width: 223px; height: 517px; background: url(../images/magnifying.png); background-position: center; background-size: cover; background-repeat: no-repeat; transform-origin: bottom right;}

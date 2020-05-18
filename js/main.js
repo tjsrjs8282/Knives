@@ -130,7 +130,7 @@ var video = document.getElementById("slider");
 /*============resize & scroll action end===========*/	
 
 /*================ost sound start==============*/		
-if($(window).length) {
+	if($(window).length) {
 	var audio = document.getElementById("audio-player");
     audio.volume = 0.2;
 		$('body').addClass("audio-on");
