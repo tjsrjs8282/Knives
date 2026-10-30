@@ -1,0 +1,7 @@
+# Not needed to build the site (and legacy/ alone is 130 MB of 2020 trailers)
+legacy
+docs
+.cache
+.astro
+dist
+.vercel/output
