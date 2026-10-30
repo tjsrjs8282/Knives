@@ -1,0 +1,40 @@
+---
+import Base from "../layouts/Base.astro";
+import Gate from "../components/Gate.astro";
+import Hud from "../components/Hud.astro";
+import Hero from "../components/Hero.astro";
+import CaseFile from "../components/CaseFile.astro";
+import Suspects from "../components/Suspects.astro";
+import Evidence from "../components/Evidence.astro";
+import Trailers from "../components/Trailers.astro";
+import Series from "../components/Series.astro";
+import Office from "../components/Office.astro";
+import Credits from "../components/Credits.astro";
+import Footer from "../components/Footer.astro";
+import VideoDialog from "../components/VideoDialog.astro";
+
+const title = "나이브스 아웃 — 사건 파일 | Knives Out: The Case File";
+const description =
+  "라이언 존슨의 「나이브스 아웃」(2019) 인터랙티브 팬 페이지. 돋보기로 용의자 열 명을 조사하고, 현장 사진과 공식 예고편을 넘기고, AI 블랑에게 일상의 미스터리를 의뢰하세요.";
+---
+
+<Base title={title} description={description}>
+  <Gate />
+  <Hud />
+  <main id="main">
+    <Hero />
+    <CaseFile />
+    <Suspects />
+    <Evidence />
+    <Trailers />
+    <Series />
+    <Office />
+    <Credits />
+  </main>
+  <Footer />
+  <VideoDialog />
+</Base>
+
+<script>
+  import "../scripts/app";
+</script>

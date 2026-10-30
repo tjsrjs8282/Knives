@@ -1,0 +1,273 @@
+---
+import { Picture } from "astro:assets";
+import Icon from "./Icon.astro";
+import { EVIDENCE } from "../data/content";
+import knifeLeft from "../assets/props/knife-left.png";
+import knifeRight from "../assets/props/knife-right.png";
+
+const TILTS = [-2.2, 1.4, -0.8, 2, -1.6, 0.9, -2.4, 1.8, -1.1, 2.3, -0.6, 1.2, -1.9, 0.7, -1.4, 2.1, -0.9];
+const tag = (i: number) => `EXHIBIT ${String(i + 1).padStart(2, "0")}`;
+---
+
+<section class="evidence section" id="evidence" aria-labelledby="evidence-title">
+  <div class="evidence__pin" data-evidence-pin>
+    <div class="container">
+      <header class="heading" data-reveal>
+        <p class="heading__label">Exhibit C · 현장 사진</p>
+        <h2 class="heading__title" id="evidence-title">증거물 열일곱 장</h2>
+        <p class="heading__en" lang="en">Exhibits 01 to 17, as filed.</p>
+      </header>
+    </div>
+
+    <div class="evidence__viewport" data-evidence-viewport>
+      <ol class="evidence__track" role="list" data-evidence-track>
+        {
+          EVIDENCE.map((e, i) => (
+            <li class="exhibit" style={`--tilt:${TILTS[i % TILTS.length]}deg`}>
+              <button class="exhibit__photo" type="button" data-exhibit={i} aria-haspopup="dialog">
+                <Picture src={e.src} formats={["avif"]} fallbackFormat="webp" widths={[420, 640, 960]} sizes="(max-width: 760px) 78vw, 34vw" alt={e.caption} loading="lazy" />
+                <span class="exhibit__tag" aria-hidden="true">{tag(i)}</span>
+              </button>
+              <p class="exhibit__caption">
+                <span class="exhibit__place">{e.place}</span>
+                {e.caption}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+    <p class="evidence__hint" aria-hidden="true">
+      <span class="only-fine">스크롤해서 넘기기 · 사진을 누르면 크게</span>
+      <span class="only-coarse">옆으로 밀어서 넘기기 · 사진을 누르면 크게</span>
+    </p>
+  </div>
+</section>
+
+<dialog class="lightbox" data-lightbox data-lenis-prevent aria-label="현장 사진 크게 보기">
+  <div class="lightbox__frame">
+    {
+      EVIDENCE.map((e, i) => (
+        <figure class="lightbox__item" data-lightbox-item={i} hidden>
+          <Picture src={e.src} formats={["avif"]} fallbackFormat="webp" widths={[800, 1280, 1920]} sizes="min(94vw, 1280px)" alt={e.caption} loading="lazy" />
+          <figcaption>
+            <span class="lightbox__tag">{tag(i)}</span>
+            <span class="lightbox__place">{e.place}</span>
+            {e.caption}
+          </figcaption>
+        </figure>
+      ))
+    }
+  </div>
+  <div class="lightbox__nav">
+    <button type="button" class="knife-btn" data-lightbox-step="-1">
+      <Picture src={knifeLeft} formats={["avif"]} fallbackFormat="webp" widths={[160, 320]} sizes="120px" alt="" />
+      <span class="sr-only">이전 사진</span>
+    </button>
+    <p class="lightbox__count" aria-live="polite"><span data-lightbox-index>1</span> / {EVIDENCE.length}</p>
+    <button type="button" class="knife-btn" data-lightbox-step="1">
+      <Picture src={knifeRight} formats={["avif"]} fallbackFormat="webp" widths={[160, 320]} sizes="120px" alt="" />
+      <span class="sr-only">다음 사진</span>
+    </button>
+  </div>
+  <button class="dialog-close" type="button" data-lightbox-close><Icon name="close" /><span class="sr-only">닫기</span></button>
+</dialog>
+
+<style>
+  .evidence {
+    padding-block: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 30%, rgba(1, 53, 59, 0.85), transparent 75%),
+      linear-gradient(#08201d, #04110f);
+  }
+  .evidence__pin {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-block: calc(var(--hud-h) + clamp(32px, 6vh, 64px)) clamp(36px, 6vh, 64px);
+  }
+  .evidence .heading {
+    margin-bottom: clamp(24px, 4vh, 44px);
+  }
+  .evidence__viewport {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-block: 18px 28px;
+  }
+  .evidence__viewport::-webkit-scrollbar {
+    display: none;
+  }
+  /* desktop with motion: the page scroll drives the track (src/scripts/motion.ts) */
+  html.js-motion .evidence__viewport.is-driven {
+    overflow: hidden;
+  }
+  .evidence__track {
+    display: flex;
+    gap: clamp(22px, 3vw, 48px);
+    width: max-content;
+    padding-inline: var(--gutter);
+  }
+  .exhibit {
+    width: min(78vw, 34vw + 120px, 560px);
+    scroll-snap-align: center;
+    rotate: var(--tilt);
+    transition: rotate 0.5s var(--ease-out);
+  }
+  .exhibit:hover,
+  .exhibit:focus-within {
+    rotate: 0deg;
+  }
+  .exhibit__photo {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 10px 10px 34px;
+    background: #f4efe4;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+    transition: transform 0.5s var(--ease-out);
+  }
+  .exhibit__photo:hover {
+    transform: translateY(-6px);
+  }
+  .exhibit__photo :global(img) {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    filter: sepia(0.12) contrast(1.04);
+  }
+  .exhibit__tag {
+    position: absolute;
+    left: 14px;
+    bottom: 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--blood);
+  }
+  .exhibit__caption {
+    margin-top: 16px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-dim);
+  }
+  .exhibit__place {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+  }
+  .evidence__hint {
+    margin-top: 8px;
+    text-align: center;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+  .only-coarse {
+    display: none;
+  }
+  @media (hover: none), (pointer: coarse) {
+    .only-fine {
+      display: none;
+    }
+    .only-coarse {
+      display: inline;
+    }
+  }
+
+  /* ── lightbox ── */
+  .lightbox {
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    background: rgba(5, 4, 3, 0.94);
+  }
+  .lightbox[open] {
+    display: grid;
+    grid-template-rows: 1fr auto;
+  }
+  .lightbox::backdrop {
+    background: transparent;
+  }
+  .lightbox__frame {
+    display: grid;
+    place-items: center;
+    min-height: 0;
+    padding: 64px 16px 0;
+  }
+  .lightbox__item {
+    display: grid;
+    gap: 14px;
+    justify-items: center;
+    max-width: 1280px;
+    max-height: 100%;
+  }
+  .lightbox__item[hidden] {
+    display: none;
+  }
+  .lightbox__item :global(img) {
+    width: auto;
+    max-width: 100%;
+    max-height: calc(100dvh - 240px);
+    object-fit: contain;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+  }
+  .lightbox__item figcaption {
+    max-width: 44em;
+    text-align: center;
+    font-size: 16px;
+    color: var(--text-dim);
+  }
+  .lightbox__tag,
+  .lightbox__place {
+    margin-right: 10px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+  }
+  .lightbox__tag {
+    color: #f0645a; /* blood, lifted for contrast on the dark backdrop */
+  }
+  .lightbox__nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(16px, 5vw, 56px);
+    padding: 12px 16px 22px;
+  }
+  .lightbox__count {
+    min-width: 5em;
+    text-align: center;
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+  }
+  .knife-btn {
+    display: grid;
+    place-items: center;
+    width: 120px;
+    height: 56px;
+    border-radius: var(--radius);
+    transition: transform 0.35s var(--ease-out), background-color 0.3s;
+  }
+  .knife-btn :global(img) {
+    width: 108px;
+  }
+  .knife-btn[data-lightbox-step="-1"]:hover {
+    transform: translateX(-6px);
+  }
+  .knife-btn[data-lightbox-step="1"]:hover {
+    transform: translateX(6px);
+  }
+  .knife-btn:hover {
+    background: rgba(239, 201, 0, 0.08);
+  }
+</style>

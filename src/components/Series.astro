@@ -1,0 +1,191 @@
+---
+import Icon from "./Icon.astro";
+import { SERIES } from "../data/content";
+---
+
+<section class="series section" id="series" aria-labelledby="series-title">
+  <div class="container">
+    <header class="heading" data-reveal>
+      <p class="heading__label">Exhibit E · 블랑의 사건들</p>
+      <h2 class="heading__title" id="series-title">사건은 계속된다</h2>
+      <p class="heading__en" lang="en">A Benoit Blanc mystery — three files so far.</p>
+      <p class="heading__lead">
+        2020년 이 사이트를 만들 때 블랑의 사건은 하나뿐이었습니다. 지금은 세 권의 파일이 쌓였어요. 두 번째와 세 번째 사건은 넷플릭스에서 볼 수 있습니다.
+      </p>
+    </header>
+
+    <ol class="files" role="list">
+      {
+        SERIES.map((s, i) => (
+          <li class:list={["file", { "file--current": s.current }]} data-reveal style={`--delay:${i * 0.1}s; --i:${i}`}>
+            <article class="file__card" aria-labelledby={`series-${s.no}`}>
+              <span class="file__tab">CASE {s.no}</span>
+              <p class="file__year">{s.year}</p>
+              <h3 class="file__title" id={`series-${s.no}`}>
+                {s.title}
+                <span lang="en">{s.titleEn}</span>
+              </h3>
+              <p class="file__release">{s.release}</p>
+              <p class="file__premise">{s.premise}</p>
+              <p class="file__song">
+                <span>제목의 출처</span>
+                {s.song}
+              </p>
+              <button class="btn file__btn" type="button" data-video-open={s.trailer} data-video-title={`「${s.title}」 공식 예고편`}>
+                <Icon name="play" /> 예고편
+              </button>
+              {s.current && <span class="stamp file__stamp">This File</span>}
+            </article>
+          </li>
+        ))
+      }
+    </ol>
+
+    <aside class="series__note" data-reveal>
+      <p>
+        세 편의 제목은 모두 노래 제목입니다. 그리고 2020년 이 사이트가 ‘OST’라며 배경에 틀던 곡이 바로 첫 번째, 라디오헤드의 「Knives Out」이었어요. 영화
+        음악이 아니라서, 리마스터에서는 이 곡을 빼고 이 페이지를 위해 새로 만든 테마를 씁니다.
+      </p>
+      <p class="series__next">네 번째 사건은 아직 공식 발표 전입니다. (2026년 10월 기준)</p>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .series {
+    background:
+      radial-gradient(ellipse 70% 60% at 20% 20%, rgba(19, 58, 51, 0.7), transparent 70%),
+      linear-gradient(var(--green), #071613);
+  }
+  .files {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(18px, 2.6vw, 36px);
+    padding-top: 30px;
+  }
+  .file__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    padding: clamp(24px, 3vw, 34px);
+    border-radius: 4px 10px 10px 10px;
+    color: var(--paper-ink);
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, 0.24), transparent 45%),
+      #d9c08a;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
+    transition: transform 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out);
+  }
+  .file:nth-child(2) .file__card {
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, 0.24), transparent 45%),
+      #c9d3cf;
+  }
+  .file:nth-child(3) .file__card {
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, 0.2), transparent 45%),
+      #cdb8b0;
+  }
+  .file__card:hover {
+    transform: translateY(-8px) rotate(-0.6deg);
+    box-shadow: 0 34px 70px rgba(0, 0, 0, 0.55);
+  }
+  .file__tab {
+    position: absolute;
+    top: -24px;
+    left: 0;
+    padding: 5px 16px 3px;
+    border-radius: 6px 6px 0 0;
+    background: inherit;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+  .file__year {
+    font-family: var(--font-display);
+    font-size: clamp(54px, 6vw, 84px);
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: rgba(43, 32, 23, 0.85);
+  }
+  .file__title {
+    font-size: clamp(21px, 2vw, 26px);
+    font-weight: 900;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+  .file__title span {
+    display: block;
+    margin-top: 4px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 0.72em;
+    color: var(--paper-dim);
+  }
+  .file__release {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--paper-dim);
+  }
+  .file__premise {
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  .file__song {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(43, 32, 23, 0.4);
+    font-size: 14px;
+  }
+  .file__song span {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--paper-dim);
+  }
+  .file__btn {
+    --btn-fg: var(--paper-ink);
+    --btn-line: rgba(43, 32, 23, 0.5);
+    align-self: flex-start;
+  }
+  .file__btn:hover {
+    --btn-bg: var(--paper-ink);
+    --btn-fg: var(--paper);
+  }
+  .file__stamp {
+    position: absolute;
+    right: 18px;
+    top: 26px;
+    rotate: 10deg;
+  }
+  .series__note {
+    display: grid;
+    gap: 10px;
+    max-width: 52em;
+    margin: clamp(40px, 7vh, 72px) auto 0;
+    padding: 22px 24px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--text-dim);
+    font-size: 16px;
+  }
+  .series__next {
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--text-faint);
+  }
+  @media (max-width: 960px) {
+    .files {
+      grid-template-columns: 1fr;
+      gap: 44px;
+      max-width: 560px;
+      margin-inline: auto;
+    }
+  }
+</style>

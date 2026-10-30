@@ -1,0 +1,38 @@
+{
+  "name": "knives-out-remastered",
+  "version": "2.0.0",
+  "private": true,
+  "description": "An interactive, fan-made Knives Out case file — the 2020 jQuery original, rebuilt from scratch.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "npx -y serve@14.2.4 .vercel/output/static -l 4322",
+    "check": "astro check",
+    "assets": "node scripts/media.mjs && node scripts/images.mjs",
+    "assets:upscale": "node scripts/upscale.mjs",
+    "assets:sfx": "node scripts/sfx.mjs",
+    "assets:og": "node scripts/og.mjs",
+    "shots": "node scripts/shots.mjs",
+    "assets:fonts": "node scripts/fonts.mjs",
+    "a11y": "node scripts/a11y.mjs",
+    "shots:legacy": "node scripts/shots-legacy.mjs"
+  },
+  "dependencies": {
+    "@astrojs/vercel": "^11.0.17",
+    "astro": "^7.4.4",
+    "gsap": "^3.15.0",
+    "lenis": "^1.3.27",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@types/node": "^24.19.2",
+    "axe-core": "^4.14.0",
+    "puppeteer-core": "^24.43.1",
+    "typescript": "^5.9.3"
+  }
+}

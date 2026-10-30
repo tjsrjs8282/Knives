@@ -1,0 +1,223 @@
+---
+import { Picture } from "astro:assets";
+import Icon from "./Icon.astro";
+import wheel from "../assets/brand/knife-wheel.png";
+import logoKnives from "../assets/brand/logo-knives.png";
+import logoOut from "../assets/brand/logo-out.png";
+import knifeDown from "../assets/props/knife-right.png";
+---
+
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="hero__media" aria-hidden="true">
+    <video
+      class="hero__video"
+      data-hero-video
+      muted
+      loop
+      playsinline
+      preload="none"
+      data-poster="/media/hero.webp"
+      data-src-desktop="/media/hero.webm|/media/hero.mp4"
+      data-src-mobile="/media/hero-sm.webm|/media/hero-sm.mp4"
+      tabindex="-1"></video>
+    <div class="hero__shade"></div>
+  </div>
+
+  <div class="hero__wheel" data-wheel aria-hidden="true">
+    <Picture src={wheel} formats={["avif"]} fallbackFormat="webp" widths={[640, 1000, 1500]} sizes="(max-width: 700px) 130vw, min(1100px, 92vmin)" alt="" loading="lazy" data-warm />
+  </div>
+
+  <div class="hero__content">
+    <p class="hero__kicker" data-hero-kicker lang="en">A Rian Johnson Whodunnit</p>
+    <h1 class="hero__title" id="hero-title">
+      <span class="sr-only">나이브스 아웃 (Knives Out)</span>
+      <span class="hero__logo" data-hero-logo aria-hidden="true">
+        <Picture pictureAttributes={{ class: "logo-knives" }} src={logoKnives} formats={["avif"]} fallbackFormat="webp" widths={[420, 640, 900, 1300, 1800]} sizes="min(60vw, 640px)" alt="" loading="lazy" data-warm />
+        <Picture pictureAttributes={{ class: "logo-out" }} src={logoOut} formats={["avif"]} fallbackFormat="webp" widths={[220, 340, 480, 680, 960]} sizes="min(31.4vw, 335px)" alt="" loading="lazy" data-warm />
+      </span>
+    </h1>
+    <p class="hero__tagline" data-hero-line lang="en">Hell, any of them could have done it.</p>
+    <p class="hero__tagline-ko" data-hero-line>누구든, 범인일 수 있다.</p>
+    <div class="hero__actions" data-hero-line>
+      <a class="btn btn--solid" href="#case">사건 파일 열람 <Icon name="arrow-down" /></a>
+      <button class="btn" type="button" data-video-open="gBiE4_kFNuw" data-video-title="「나이브스 아웃」 메인 예고편">
+        <Icon name="play" /> 예고편 보기
+      </button>
+    </div>
+    <p class="hero__meta" data-hero-line>2019 · 130분 · 미스터리 · 각본·감독 라이언 존슨</p>
+  </div>
+
+  <a class="hero__cue" href="#case" data-hero-cue>
+    <Picture src={knifeDown} formats={["avif"]} fallbackFormat="webp" widths={[120, 240]} sizes="120px" alt="" />
+    <span class="sr-only">사건 개요로 내려가기</span>
+  </a>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    overflow: hidden;
+    background: #050403;
+  }
+  .hero__media,
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+  }
+  .hero__media {
+    z-index: -3;
+  }
+  .hero__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.9;
+  }
+  .hero__shade {
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 46%, rgba(5, 4, 3, 0.2), rgba(5, 4, 3, 0.86) 78%),
+      linear-gradient(rgba(5, 4, 3, 0.7), transparent 26%, transparent 64%, var(--ink));
+  }
+  .hero__shade::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--grain);
+    opacity: 0.1;
+  }
+
+  .hero__wheel {
+    position: absolute;
+    z-index: -2;
+    left: 50%;
+    top: 46%;
+    width: min(1100px, 92vmin);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    opacity: 0.38;
+    filter: drop-shadow(0 0 40px rgba(239, 201, 0, 0.12));
+    pointer-events: none;
+  }
+  .hero__wheel :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero__content {
+    display: grid;
+    justify-items: center;
+    gap: clamp(12px, 2.2vh, 20px);
+    width: 100%;
+    padding: calc(var(--hud-h) + 32px) var(--gutter) 120px;
+    text-align: center;
+  }
+  .hero__kicker {
+    font-family: var(--font-display);
+    font-size: clamp(13px, 1.4vw, 17px);
+    font-weight: 600;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .hero__title {
+    width: min(92vw, 980px);
+  }
+  .hero__logo {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.6));
+  }
+  .hero__logo :global(picture) {
+    display: block;
+  }
+  .hero__logo :global(img) {
+    width: 100%;
+  }
+  .hero__logo :global(.logo-knives) {
+    width: 65.67%;
+  }
+  .hero__logo :global(.logo-out) {
+    width: 34.33%;
+    transform-origin: 6% 92%;
+    transform: rotate(var(--out-tilt, 0deg));
+    transition: transform 0.9s cubic-bezier(0.3, 1.7, 0.45, 1);
+  }
+  /* 2020: the "Out" fell over when you opened the synopsis. Now it wobbles on hover. */
+  .hero__logo:hover :global(.logo-out) {
+    --out-tilt: 9deg;
+  }
+  .hero__tagline {
+    margin-top: 6px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(20px, 2.6vw, 32px);
+    line-height: 1.3;
+    color: var(--text);
+  }
+  .hero__tagline-ko {
+    margin-top: -6px;
+    font-size: clamp(15px, 1.4vw, 18px);
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .hero__meta {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--text-faint);
+  }
+
+  .hero__cue {
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 72px;
+    translate: -50% 0;
+  }
+  .hero__cue :global(img) {
+    width: 92px;
+    max-width: none;
+    rotate: 90deg;
+    animation: cue 2.4s var(--ease-io) infinite;
+  }
+  @keyframes cue {
+    50% {
+      translate: 8px 0;
+    }
+  }
+
+  /* Behind the gate the hero loads but does not paint — it is revealed by the intro. */
+  html.is-gated:not(.is-entered) .hero__content,
+  html.is-gated:not(.is-entered) .hero__wheel,
+  html.is-gated:not(.is-entered) .hero__cue,
+  html.is-gated:not(.is-entered) .hero__video {
+    opacity: 0;
+  }
+
+  @media (max-width: 700px) {
+    .hero__wheel {
+      width: 132vw;
+      top: 42%;
+      opacity: 0.3;
+    }
+    .hero__content {
+      padding-bottom: 104px;
+    }
+  }
+</style>

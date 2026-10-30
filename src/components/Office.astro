@@ -1,0 +1,218 @@
+---
+const EXAMPLES = ["냉장고에 넣어 둔 푸딩이 사라졌어요", "매일 아침 탕비실 믹스커피가 한 봉지씩 비어요", "단톡방 공지를 아무도 안 읽은 척해요"];
+---
+
+<section class="office section" id="office" aria-labelledby="office-title">
+  <div class="container office__layout">
+    <div class="office__brief">
+      <header class="heading" data-reveal>
+        <p class="heading__label">Exhibit F · 탐정 사무소</p>
+        <h2 class="heading__title" id="office-title">사소한 사건도<br />환영합니다</h2>
+        <p class="heading__en" lang="en">No mystery too small for Benoit Blanc.</p>
+        <p class="heading__lead">일상의 작은 수수께끼를 의뢰하세요. AI가 연기하는 블랑이 용의자를 추리고, 단서를 짚고, 결론을 내립니다.</p>
+      </header>
+
+      <form class="office__form" data-office-form data-reveal novalidate>
+        <label class="office__label" for="office-case">의뢰 내용</label>
+        <textarea id="office-case" name="case" rows="4" maxlength="200" required placeholder="예) 냉장고에 넣어 둔 푸딩이 사라졌어요" aria-describedby="office-help"
+        ></textarea>
+        <div class="office__row">
+          <p class="office__help" id="office-help"><span data-office-count>0</span>/200 · 실존 인물의 이름은 빼 주세요</p>
+          <button class="btn btn--solid" type="submit" data-office-submit>사건 의뢰하기</button>
+        </div>
+        <ul class="office__examples" role="list" aria-label="의뢰 예시">
+          {
+            EXAMPLES.map((e) => (
+              <li>
+                <button class="chip" type="button" data-office-example>
+                  {e}
+                </button>
+              </li>
+            ))
+          }
+        </ul>
+      </form>
+    </div>
+
+    <div class="office__desk" data-reveal style="--delay: .12s">
+      <article class="report" data-report aria-labelledby="report-heading">
+        <header class="report__head">
+          <p class="report__no">CASE REPORT <span data-report-no>No. ----</span></p>
+          <h3 class="report__title" id="report-heading" data-report-title>의뢰를 기다리는 중</h3>
+        </header>
+        <div class="report__body" data-report-body aria-live="polite">
+          <p class="report__empty">블랑은 지금 서재에서 피아노 건반을 하나씩 누르며 기다리고 있습니다. 왼쪽에 사건을 적어 주세요.</p>
+        </div>
+        <span class="stamp report__stamp" data-report-stamp hidden>Solved</span>
+      </article>
+      <p class="office__note">AI가 지어낸 가상의 추리입니다. 영화 속 블랑의 대사가 아니며, 영화 「나이브스 아웃」의 범인은 말해 주지 않습니다. · Gemini 3.5 Flash Lite</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .office {
+    background:
+      radial-gradient(ellipse 50% 60% at 72% 40%, rgba(239, 170, 60, 0.16), transparent 70%),
+      linear-gradient(#1a0f09, var(--wood) 45%, #120a06);
+  }
+  .office__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: clamp(32px, 5vw, 80px);
+    align-items: start;
+  }
+  .office__form {
+    display: grid;
+    gap: 12px;
+  }
+  .office__label {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    color: var(--gold);
+  }
+  .office__form textarea {
+    width: 100%;
+    min-height: 132px;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(0, 0, 0, 0.35);
+    font-size: 17px;
+    line-height: 1.6;
+    resize: vertical;
+    transition: border-color 0.3s, background-color 0.3s;
+  }
+  .office__form textarea::placeholder {
+    color: var(--text-faint);
+  }
+  .office__form textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: rgba(0, 0, 0, 0.5);
+  }
+  .office__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .office__help {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+  .office__examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  /* ── the report on the desk ── */
+  .report {
+    position: relative;
+    min-height: 420px;
+    padding: clamp(24px, 4vw, 44px);
+    color: var(--paper-ink);
+    background:
+      repeating-linear-gradient(transparent 0 31px, rgba(43, 32, 23, 0.08) 31px 32px),
+      linear-gradient(160deg, rgba(255, 255, 255, 0.4), transparent 50%),
+      var(--paper);
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+    rotate: 0.6deg;
+  }
+  .report__head {
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+    border-bottom: 2px solid var(--paper-ink);
+  }
+  .report__no {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--blood);
+  }
+  .report__title {
+    margin-top: 6px;
+    font-size: clamp(22px, 2.4vw, 30px);
+    font-weight: 900;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+  .report__body {
+    display: grid;
+    gap: 16px;
+    font-size: 16px;
+    line-height: 1.75;
+  }
+  .report__empty {
+    color: var(--paper-dim);
+  }
+  .report__body :global(h4) {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    color: var(--paper-dim);
+  }
+  .report__body :global(ol) {
+    display: grid;
+    gap: 4px;
+    margin: 4px 0 0;
+    padding-left: 1.2em;
+  }
+  .report__body :global(.report__verdict) {
+    padding: 12px 14px;
+    border-left: 3px solid var(--blood);
+    background: rgba(143, 21, 21, 0.08);
+    font-weight: 700;
+  }
+  .report__body :global(.report__error) {
+    color: var(--blood);
+    font-weight: 600;
+  }
+  .report__body :global(.caret)::after {
+    content: "▍";
+    animation: blink 0.9s steps(1) infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  .report__stamp {
+    position: absolute;
+    right: 22px;
+    top: 24px;
+    font-size: 22px;
+    rotate: -14deg;
+  }
+  .report__stamp[hidden] {
+    display: none;
+  }
+  .report__stamp.is-slam {
+    animation: slam 0.45s cubic-bezier(0.2, 1.6, 0.4, 1);
+  }
+  @keyframes slam {
+    from {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  }
+  .office__note {
+    margin-top: 22px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-faint);
+  }
+
+  @media (max-width: 900px) {
+    .office__layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

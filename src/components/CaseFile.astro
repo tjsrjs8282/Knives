@@ -1,0 +1,238 @@
+---
+import { Picture, getImage } from "astro:assets";
+import poster from "../assets/bg/family-poster.jpg";
+import slash from "../assets/props/slash.png";
+import blood from "../assets/props/blood.png";
+
+// The poster is drawn twice (the two halves of the tear) — one image, one request.
+const posterImg = await getImage({ src: poster, format: "webp", width: 1920, quality: 72 });
+const posterSm = await getImage({ src: poster, format: "webp", width: 1000, quality: 70 });
+---
+
+<section class="case section" id="case" aria-labelledby="case-title">
+  <div class="case__stage" data-case-stage>
+    <div class="case__report">
+      <div class="case__report-inner container">
+        <header class="heading">
+          <p class="heading__label">Case No. 1127 · 사건 개요</p>
+          <h2 class="heading__title" id="case-title">생일 다음 날 아침</h2>
+          <p class="heading__en" lang="en">The morning after the party.</p>
+        </header>
+        <p class="case__text" data-case-text>
+          베스트셀러 추리소설가 할런 트롬비가 85번째 생일 파티 다음 날 아침, 자기 방에서 숨진 채 발견된다. 경찰은 자살로 보지만, 누군가 익명으로
+          고용한 사립 탐정 브누아 블랑이 저택에 나타난다. 그날 밤 저택에 있던 사람은 모두 용의자다. 그리고 모두에게 동기가 있다.
+        </p>
+      </div>
+      <Picture class="case__blood" src={blood} formats={["avif"]} fallbackFormat="webp" widths={[360, 715]} sizes="360px" alt="" aria-hidden="true" />
+    </div>
+
+    <div class="case__poster case__poster--top" aria-hidden="true">
+      <img src={posterImg.src} srcset={`${posterSm.src} 1000w, ${posterImg.src} 1920w`} sizes="100vw" alt="" loading="lazy" decoding="async" />
+    </div>
+    <div class="case__poster case__poster--bottom" aria-hidden="true">
+      <img src={posterImg.src} srcset={`${posterSm.src} 1000w, ${posterImg.src} 1920w`} sizes="100vw" alt="" loading="lazy" decoding="async" />
+    </div>
+    <div class="case__slash" data-slash aria-hidden="true">
+      <Picture src={slash} formats={["avif"]} fallbackFormat="webp" widths={[960, 1920]} sizes="112vw" alt="" />
+    </div>
+    <p class="case__hint" aria-hidden="true">SCROLL TO OPEN THE FILE</p>
+  </div>
+
+  <div class="case__after container">
+    <dl class="case__facts" data-reveal>
+      <div><dt>사망자</dt><dd>할런 트롬비 (85) · 추리소설가</dd></div>
+      <div><dt>발견</dt><dd>생일 파티 다음 날 아침, 가정부 프랜</dd></div>
+      <div><dt>장소</dt><dd>트롬비 저택, 할런의 방</dd></div>
+      <div><dt>경찰 소견</dt><dd>자살</dd></div>
+      <div><dt>의뢰인</dt><dd><span class="redacted" title="익명">████████</span> (익명)</dd></div>
+    </dl>
+    <blockquote class="case__quote" data-reveal style="--delay: .12s">
+      <p>“모두가 용의선상에 올라 있어요.”</p>
+      <footer>— 「나이브스 아웃」 1차 예고편 중에서</footer>
+    </blockquote>
+  </div>
+</section>
+
+<style>
+  .case {
+    padding-block: 0 clamp(80px, 12vh, 140px);
+    background: linear-gradient(var(--ink), #120d09 40%, var(--ink));
+  }
+  .case__stage {
+    position: relative;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+    /* the tear line, recalculated in JS to follow the slash art */
+    --y0: 44%;
+    --y1: 58%;
+  }
+
+  /* report: what the tear reveals */
+  .case__report {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    align-items: center;
+    background:
+      radial-gradient(ellipse 80% 70% at 30% 40%, rgba(143, 21, 21, 0.18), transparent 70%),
+      linear-gradient(160deg, #1b1410, #0b0907 70%);
+  }
+  .case__report-inner {
+    position: relative;
+    z-index: 1;
+    padding-top: var(--hud-h);
+  }
+  .case__report .heading {
+    margin-bottom: clamp(20px, 4vh, 40px);
+  }
+  .case__text {
+    max-width: 30em;
+    font-size: clamp(19px, 2.3vw, 31px);
+    font-weight: 500;
+    line-height: 1.62;
+    letter-spacing: -0.02em;
+  }
+  .case__text :global(.word) {
+    transition: opacity 0.2s linear;
+  }
+  .case__report :global(.case__blood) {
+    position: absolute;
+    right: 6%;
+    bottom: 8%;
+    width: clamp(200px, 26vw, 380px);
+    opacity: 0.85;
+    pointer-events: none;
+  }
+
+  /* the poster, cut in two along the slash */
+  .case__poster {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    will-change: transform;
+  }
+  .case__poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 30%;
+    filter: saturate(0.9) brightness(0.82);
+  }
+  .case__poster--top {
+    clip-path: polygon(0 0, 100% 0, 100% var(--y1), 0 var(--y0));
+  }
+  .case__poster--bottom {
+    clip-path: polygon(0 var(--y0), 100% var(--y1), 100% 100%, 0 100%);
+  }
+  .case__poster::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(11, 9, 7, 0.4), transparent 30%, transparent 70%, rgba(11, 9, 7, 0.5));
+  }
+  .case__slash {
+    position: absolute;
+    z-index: 3;
+    left: -6%;
+    width: 112%;
+    top: var(--slash-top, 40%);
+    pointer-events: none;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
+  }
+  .case__slash :global(img) {
+    width: 100%;
+  }
+  .case__hint {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    bottom: 28px;
+    translate: -50% 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-shadow: 0 1px 8px #000;
+  }
+
+  /* after the pin */
+  .case__after {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: clamp(32px, 6vw, 96px);
+    align-items: end;
+    padding-top: clamp(56px, 10vh, 110px);
+  }
+  .case__facts {
+    display: grid;
+    border-top: 1px solid var(--line);
+    font-size: 16px;
+  }
+  .case__facts div {
+    display: grid;
+    grid-template-columns: 7.5em 1fr;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .case__facts dt {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--gold);
+  }
+  .redacted {
+    display: inline-block;
+    color: var(--text);
+    background: var(--text);
+    letter-spacing: -0.1em;
+    line-height: 1.1;
+  }
+  .case__quote p {
+    font-size: clamp(24px, 3vw, 38px);
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+  }
+  .case__quote footer {
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--text-faint);
+  }
+
+  /* No motion: no pin, no split — the slashed poster sits above the report. */
+  html:not(.js-motion) .case__stage {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+  html:not(.js-motion) .case__poster--bottom,
+  html:not(.js-motion) .case__hint {
+    display: none;
+  }
+  html:not(.js-motion) .case__poster--top {
+    position: relative;
+    order: -1;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 70vh;
+    clip-path: none;
+  }
+  html:not(.js-motion) .case__slash {
+    top: calc(min(28vw, 35vh) - 7vw);
+  }
+  html:not(.js-motion) .case__report {
+    position: relative;
+    padding-block: 64px 0;
+    background: none;
+  }
+
+  @media (max-width: 820px) {
+    .case__after {
+      grid-template-columns: 1fr;
+    }
+    .case__poster img {
+      object-position: 62% 30%;
+    }
+  }
+</style>

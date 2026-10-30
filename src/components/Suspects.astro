@@ -1,0 +1,596 @@
+---
+import { Picture } from "astro:assets";
+import Icon from "./Icon.astro";
+import { OTHERS, SUSPECTS, paintedOf, photoOf, windowOf } from "../data/suspects";
+import houseMystery from "../assets/house/house-mystery.jpg";
+import houseClear from "../assets/house/house-clear.jpg";
+import magnifier from "../assets/props/magnifier.png";
+
+const pct = (v: number) => `${v}%`;
+const houseSizes = "(max-width: 760px) 100vw, min(1480px, 100vw)";
+---
+
+<section class="suspects section" id="suspects" aria-labelledby="suspects-title">
+  <div class="container">
+    <header class="heading" data-reveal>
+      <p class="heading__label">Exhibit B · 용의자</p>
+      <h2 class="heading__title" id="suspects-title">창문마다, 동기가 하나씩</h2>
+      <p class="heading__en" lang="en">Every one of them had a reason.</p>
+      <p class="heading__lead">
+        <span class="only-fine">돋보기를 움직여 창문 속 얼굴을 비춰 보세요. 초상을 누르면 그 사람의 사건 파일이 열립니다.</span>
+        <span class="only-coarse">창문 속 인물을 눌러 사건 파일을 여세요.</span>
+      </p>
+    </header>
+  </div>
+
+  <div class="house-wrap" data-reveal>
+    <div class="house" data-house>
+      <Picture class="house__base" src={houseMystery} formats={["avif"]} fallbackFormat="webp" widths={[760, 1200, 1600, 1920]} sizes={houseSizes} alt="" loading="lazy" />
+      <div class="house__reveal" aria-hidden="true">
+        <Picture src={houseClear} formats={["avif"]} fallbackFormat="webp" widths={[1200, 1920]} sizes={houseSizes} alt="" loading="lazy" />
+      </div>
+      {
+        SUSPECTS.map((s) => {
+          const f = windowOf(s.id).face;
+          return (
+            <div class="house__face" data-face={s.id} style={`left:${pct(f.x)};top:${pct(f.y)};width:${pct(f.w)};height:${pct(f.h)}`} aria-hidden="true">
+              <Picture src={paintedOf(s.id)} formats={["avif"]} fallbackFormat="webp" widths={[200, 400]} sizes="10vw" alt="" loading="lazy" />
+            </div>
+          );
+        })
+      }
+      <div class="house__lens" data-lens aria-hidden="true">
+        <Picture src={magnifier} formats={["avif"]} fallbackFormat="webp" widths={[240, 480]} sizes="240px" alt="" loading="lazy" />
+      </div>
+      <ul class="house__windows" role="list">
+        {
+          SUSPECTS.map((s) => {
+            const h = windowOf(s.id).hit;
+            return (
+              <li>
+                <button
+                  class="window"
+                  type="button"
+                  data-suspect={s.id}
+                  style={`left:${pct(h.x)};top:${pct(h.y)};width:${pct(h.w)};height:${pct(h.h)}`}
+                  aria-haspopup="dialog">
+                  <span class="window__tag">{s.name}</span>
+                  <span class="sr-only">— {s.role}, 사건 파일 열기</span>
+                </button>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Small screens: the same ten files as a list (the windows are too small to tap). -->
+    <ul class="suspect-list" role="list">
+      {
+        SUSPECTS.map((s) => (
+          <li>
+            <button class="suspect-card" type="button" data-suspect={s.id} aria-haspopup="dialog">
+              <Picture src={paintedOf(s.id)} formats={["avif"]} fallbackFormat="webp" widths={[200, 400]} sizes="(max-width: 760px) 40vw, 200px" alt="" loading="lazy" />
+              <span class="suspect-card__name">{s.name}</span>
+              <span class="suspect-card__role">{s.role}</span>
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="suspects__status" data-reveal>
+      <p class="suspects__count" aria-live="polite">
+        조사한 인물 <strong data-investigated>0</strong> / {SUSPECTS.length}
+      </p>
+      <ol class="suspects__dots" role="list" aria-hidden="true">
+        {SUSPECTS.map((s) => <li data-dot={s.id} />)}
+      </ol>
+    </div>
+    <div class="suspects__solved" data-solved hidden>
+      <span class="stamp">Case Open</span>
+      <p>열 명 모두 조사했습니다. 그래서 범인이 누구냐고요? 그건 영화가 알려 줄 겁니다.</p>
+    </div>
+
+    <details class="others" data-reveal>
+      <summary>그 밖에 저택에 있던 사람들 <span aria-hidden="true">+</span></summary>
+      <dl>
+        {
+          OTHERS.map((o) => (
+            <div>
+              <dt>
+                {o.name} <span>{o.actor}</span>
+              </dt>
+              <dd>{o.note}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </details>
+  </div>
+</section>
+
+<dialog class="dossier-dialog" data-dossier-dialog data-lenis-prevent aria-label="용의자 사건 파일">
+  {
+    SUSPECTS.map((s, i) => (
+      <article class="dossier" data-dossier={s.id} hidden aria-labelledby={`dossier-${s.id}`}>
+        <div class="dossier__visual">
+          <Picture class="dossier__photo" src={photoOf(s.id)} formats={["avif"]} fallbackFormat="webp" widths={[400, 800]} sizes="(max-width: 760px) 86vw, 380px" alt={`${s.name} 역의 ${s.actor}`} loading="lazy" />
+          <figure class="dossier__sketch">
+            <Picture src={paintedOf(s.id)} formats={["avif"]} fallbackFormat="webp" widths={[160, 320]} sizes="120px" alt="" loading="lazy" />
+            <figcaption>몽타주</figcaption>
+          </figure>
+        </div>
+        <div class="dossier__body">
+          <p class="dossier__no">
+            FILE {String(i + 1).padStart(2, "0")} / {SUSPECTS.length}
+          </p>
+          <h3 class="dossier__name" id={`dossier-${s.id}`}>
+            {s.name}
+            <span lang="en">{s.nameEn}</span>
+          </h3>
+          <p class="dossier__role">{s.role}</p>
+          <dl class="dossier__facts">
+            <div>
+              <dt>배우</dt>
+              <dd>
+                {s.actor} <span lang="en">{s.actorEn}</span>
+              </dd>
+            </div>
+          </dl>
+          <p class="dossier__profile">{s.profile}</p>
+          <div class="dossier__motive">
+            <h4>의심 포인트</h4>
+            <p>{s.motive}</p>
+          </div>
+          <span class="stamp dossier__stamp">Investigated</span>
+        </div>
+      </article>
+    ))
+  }
+  <div class="dossier-dialog__nav">
+    <button type="button" class="btn" data-dossier-step="-1"><Icon name="arrow-left" /> 이전 파일</button>
+    <button type="button" class="btn" data-dossier-step="1">다음 파일 <Icon name="arrow-right" /></button>
+  </div>
+  <button class="dialog-close" type="button" data-dossier-close><Icon name="close" /><span class="sr-only">사건 파일 닫기</span></button>
+</dialog>
+
+<style>
+  .suspects {
+    color: var(--ink);
+    background: var(--mustard);
+  }
+  .suspects::after {
+    opacity: 0.16;
+    mix-blend-mode: multiply;
+  }
+  .suspects .heading__label {
+    color: var(--blood);
+  }
+  .suspects .heading__en,
+  .suspects .heading__lead {
+    color: rgba(11, 9, 7, 0.78);
+  }
+  .only-coarse {
+    display: none;
+  }
+  @media (hover: none), (pointer: coarse) {
+    .only-fine {
+      display: none;
+    }
+    .only-coarse {
+      display: inline;
+    }
+  }
+
+  /* ── the house ── */
+  .house-wrap {
+    max-width: 1480px;
+    margin-inline: auto;
+    /* the poster's own yellow bleeds into the section; soften the side seams */
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+  }
+  .house {
+    /* lens position/radius in px, written by src/scripts/suspects.ts */
+    --lx: -999px;
+    --ly: -999px;
+    --lr: 0px;
+    position: relative;
+    aspect-ratio: 16 / 9;
+    container-type: inline-size;
+  }
+  .house :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+  .house__reveal {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    clip-path: circle(var(--lr) at var(--lx) var(--ly));
+    pointer-events: none;
+  }
+  .house__reveal :global(img) {
+    transform-origin: var(--lx) var(--ly);
+    transform: scale(1.3);
+  }
+  .house__face {
+    position: absolute;
+    opacity: 0;
+    transform: scale(0.96);
+    transition:
+      opacity 0.9s var(--ease-out),
+      transform 0.9s var(--ease-out);
+    pointer-events: none;
+  }
+  .house__face.is-revealed {
+    opacity: 1;
+    transform: none;
+  }
+  .house__face :global(img) {
+    object-fit: cover;
+  }
+  .house__lens {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 15.5cqi;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(calc(var(--lx) - 50%), calc(var(--ly) - 21%));
+    transition: opacity 0.4s;
+    filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.45));
+    z-index: 2;
+  }
+  .house.has-lens .house__lens {
+    opacity: 1;
+  }
+  .house__lens :global(img) {
+    height: auto;
+  }
+  .house__windows {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    z-index: 3;
+  }
+  .window {
+    position: absolute;
+    border-radius: 4px;
+  }
+  /* the lens is the cursor */
+  .house.has-lens,
+  .house.has-lens .window {
+    cursor: none;
+  }
+  .window:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 2px;
+  }
+  .window__tag {
+    position: absolute;
+    left: 50%;
+    top: calc(100% - 6px);
+    translate: -50% 0;
+    padding: 3px 10px 2px;
+    border-radius: 2px;
+    background: var(--ink);
+    color: var(--gold);
+    font-family: var(--font-ui);
+    font-size: clamp(11px, 1cqi, 14px);
+    font-weight: 700;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+      opacity 0.3s,
+      transform 0.3s var(--ease-out);
+    pointer-events: none;
+  }
+  .window:hover .window__tag,
+  .window:focus-visible .window__tag,
+  .window.is-done .window__tag {
+    opacity: 1;
+    transform: none;
+  }
+  .window.is-done .window__tag::before {
+    content: "✓ ";
+  }
+
+  /* ── list for small screens ── */
+  .suspect-list {
+    display: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 28px;
+  }
+  .suspect-card {
+    display: grid;
+    gap: 4px;
+    width: 100%;
+    padding: 10px 10px 12px;
+    border-radius: var(--radius);
+    background: var(--ink);
+    color: var(--text);
+    text-align: left;
+  }
+  .suspect-card :global(img) {
+    width: 100%;
+    aspect-ratio: 0.84;
+    object-fit: cover;
+    margin-bottom: 6px;
+  }
+  .suspect-card__name {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1.3;
+  }
+  .suspect-card__role {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--text-faint);
+  }
+  .suspect-card.is-done .suspect-card__name::after {
+    content: " ✓";
+    color: var(--gold);
+  }
+  @media (max-width: 760px) {
+    .house__windows,
+    .house__lens,
+    .house__reveal {
+      display: none;
+    }
+    .suspect-list {
+      display: grid;
+    }
+  }
+
+  /* ── progress ── */
+  .suspects__status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 16px 22px;
+    margin-top: 36px;
+    font-family: var(--font-ui);
+  }
+  .suspects__count {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .suspects__count strong {
+    font-family: var(--font-mono);
+    font-size: 20px;
+  }
+  .suspects__dots {
+    display: flex;
+    gap: 8px;
+  }
+  .suspects__dots li {
+    width: 10px;
+    height: 10px;
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    transition: background-color 0.4s, transform 0.4s var(--ease-out);
+  }
+  .suspects__dots li.is-done {
+    background: var(--blood);
+    border-color: var(--blood);
+    transform: scale(1.2);
+  }
+  .suspects__solved {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 18px;
+    font-weight: 700;
+    text-align: center;
+  }
+  .suspects__solved[hidden] {
+    display: none;
+  }
+
+  .others {
+    max-width: 760px;
+    margin: 40px auto 0;
+    border-top: 1px solid rgba(11, 9, 7, 0.3);
+    border-bottom: 1px solid rgba(11, 9, 7, 0.3);
+  }
+  .others summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 56px;
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+  }
+  .others summary::-webkit-details-marker {
+    display: none;
+  }
+  .others[open] summary span {
+    rotate: 45deg;
+  }
+  .others summary span {
+    font-size: 24px;
+    transition: rotate 0.3s;
+  }
+  .others dl {
+    display: grid;
+    gap: 2px;
+    padding-bottom: 18px;
+  }
+  .others dl div {
+    display: grid;
+    grid-template-columns: 13em 1fr;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 15px;
+  }
+  .others dt span {
+    display: block;
+    font-size: 13px;
+    color: rgba(11, 9, 7, 0.72);
+  }
+  @media (max-width: 560px) {
+    .others dl div {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+
+  /* ── dossier dialog ── */
+  .dossier-dialog {
+    width: min(920px, calc(100vw - 24px));
+    max-height: calc(100dvh - 24px);
+    margin: auto;
+    overflow: auto;
+    color: var(--paper-ink);
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, 0.35), transparent 40%),
+      var(--paper);
+    border-radius: 6px;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+  }
+  .dossier-dialog .dialog-close {
+    color: var(--paper-ink);
+    background: rgba(43, 32, 23, 0.08);
+  }
+  .dossier {
+    display: grid;
+    grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+    gap: clamp(20px, 4vw, 44px);
+    padding: clamp(20px, 4vw, 44px);
+  }
+  .dossier[hidden] {
+    display: none;
+  }
+  .dossier__visual {
+    position: relative;
+  }
+  .dossier__visual :global(.dossier__photo) {
+    width: 100%;
+    aspect-ratio: 0.833;
+    object-fit: cover;
+    border: 10px solid #fff;
+    box-shadow: 0 10px 30px rgba(43, 32, 23, 0.35);
+    rotate: -1.5deg;
+  }
+  .dossier__sketch {
+    position: absolute;
+    right: -12px;
+    bottom: -18px;
+    width: 34%;
+    padding: 6px 6px 4px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(43, 32, 23, 0.3);
+    rotate: 4deg;
+  }
+  .dossier__sketch figcaption {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-align: center;
+    color: var(--paper-dim);
+  }
+  .dossier__stamp {
+    justify-self: end;
+    margin-top: 6px;
+    rotate: -7deg;
+    font-size: 17px;
+  }
+  .dossier__body {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    padding-top: 8px;
+  }
+  .dossier__no {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    color: var(--blood);
+  }
+  .dossier__name {
+    font-size: clamp(30px, 4vw, 44px);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+  }
+  .dossier__name span {
+    display: block;
+    margin-top: 4px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 0.5em;
+    letter-spacing: 0;
+    color: var(--paper-dim);
+  }
+  .dossier__role {
+    justify-self: start;
+    padding: 2px 10px;
+    border: 1px solid var(--paper-ink);
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .dossier__facts div {
+    display: flex;
+    gap: 12px;
+    font-size: 15px;
+  }
+  .dossier__facts dt {
+    font-family: var(--font-mono);
+    color: var(--paper-dim);
+  }
+  .dossier__facts dd span {
+    color: var(--paper-dim);
+  }
+  .dossier__profile {
+    font-size: 17px;
+  }
+  .dossier__motive {
+    padding: 14px 16px;
+    border-left: 3px solid var(--blood);
+    background: rgba(143, 21, 21, 0.07);
+  }
+  .dossier__motive h4 {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    color: var(--blood);
+  }
+  .dossier__motive p {
+    font-weight: 600;
+  }
+  .dossier-dialog__nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 clamp(20px, 4vw, 44px) clamp(20px, 4vw, 36px);
+  }
+  .dossier-dialog__nav .btn {
+    --btn-fg: var(--paper-ink);
+    --btn-line: rgba(43, 32, 23, 0.4);
+  }
+  .dossier-dialog__nav .btn:hover {
+    --btn-bg: var(--paper-ink);
+    --btn-fg: var(--paper);
+  }
+  @media (max-width: 760px) {
+    .dossier {
+      grid-template-columns: 1fr;
+      padding-top: 64px;
+    }
+    .dossier__visual {
+      width: min(320px, 82%);
+      margin-inline: auto;
+    }
+  }
+</style>
