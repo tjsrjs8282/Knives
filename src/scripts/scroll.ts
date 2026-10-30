@@ -35,14 +35,20 @@ export function scrollToTarget(target: string | HTMLElement, immediate = false) 
   const el = typeof target === "string" ? document.querySelector<HTMLElement>(target) : target;
   if (!el) return;
   if (lenis) {
-    lenis.scrollTo(el, {
+    // Absolute positions from the real scroll offset: after a native #hash jump on load
+    // Lenis's own idea of the offset can be stale, so it is never asked to resolve an element.
+    const pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+    const y = () => el.getBoundingClientRect().top + window.scrollY - pad;
+    // Lenis re-measures the page on a debounce; pins added this frame would clamp the jump.
+    lenis.resize();
+    lenis.scrollTo(y(), {
       duration: immediate ? 0 : 1.6,
       immediate,
+      force: immediate,
       easing: (t) => 1 - Math.pow(1 - t, 4),
       // sections rendered on the way (content-visibility) can move the target: land exactly
       onComplete: () => {
-        const pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
-        if (Math.abs(el.getBoundingClientRect().top - pad) > 4) lenis?.scrollTo(el, { immediate: true, force: true });
+        if (Math.abs(el.getBoundingClientRect().top - pad) > 4) lenis?.scrollTo(y(), { immediate: true, force: true });
       },
     });
   } else {

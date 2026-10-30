@@ -65,9 +65,7 @@ initVideoDialog();
 initMenu({ sound: applySound, music: (on) => void bgm.set(on), motion: (on) => void applyMotion(on) });
 const heroVideo = initHeroVideo();
 
-// Everything below the hero wakes up once fonts have settled the layout. The
-// scroll scenes wait for the folder to open too: until then the sections below
-// the hero are not rendered (content-visibility), so there is nothing to measure.
+// Everything below the hero wakes up once fonts have settled the layout.
 let entered: () => void;
 const enteredOnce = new Promise<void>((r) => (entered = r));
 document.fonts.ready.then(() =>
@@ -78,12 +76,32 @@ document.fonts.ready.then(() =>
     initOffice();
     initPreviews();
     initHud();
-    await enteredOnce;
-    requestAnimationFrame(async () => {
-      (await motionModule)?.initMotion();
-      // Arriving from a shared #anchor link: go there once the pins have their real size.
-      const target = location.hash.length > 1 ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
-      if (target) scrollToTarget(target, true);
+  }),
+);
+
+// The scroll scenes are built the frame the folder opens (until then nothing below
+// the hero is rendered), not after every font has arrived: pins that appear seconds
+// later would yank a reader who is already scrolling. Late fonts only re-measure.
+const deepLink = () => (location.hash.length > 1 ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null);
+let readerMoved = false;
+for (const type of ["wheel", "touchmove", "keydown"]) addEventListener(type, () => (readerMoved = true), { once: true, passive: true });
+enteredOnce.then(() =>
+  requestAnimationFrame(async () => {
+    (await motionModule)?.initMotion();
+    // A shared #anchor link keeps its place while pins, images and type settle — every
+    // change in the page's height re-aims it — until the reader takes over.
+    const target = deepLink();
+    if (target) {
+      const follow = new ResizeObserver(() => {
+        if (readerMoved) follow.disconnect();
+        else scrollToTarget(target, true);
+      });
+      follow.observe(document.body);
+    }
+    let timer = 0;
+    document.fonts.addEventListener("loadingdone", () => {
+      clearTimeout(timer);
+      timer = window.setTimeout(() => ScrollTrigger.refresh(), 150);
     });
   }),
 );
