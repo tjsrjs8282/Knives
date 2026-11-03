@@ -93,5 +93,4 @@ export const CREDITS = [
 export const LINKS = {
   justwatch: "https://www.justwatch.com/kr/%EC%98%81%ED%99%94/naibeuseu-aus",
   youtubeMovies: "https://www.youtube.com/watch?v=0j4r1N5WqiQ",
-  repo: "https://github.com/tjsrjs8282/Knives",
 };

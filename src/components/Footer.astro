@@ -1,6 +1,5 @@
 ---
 import { Picture } from "astro:assets";
-import { LINKS } from "../data/content";
 import logo from "../assets/brand/logo-stacked.png";
 ---
 
@@ -12,7 +11,6 @@ import logo from "../assets/brand/logo-stacked.png";
     <div class="footer__text">
       <p>
         <strong>Knives Out — The Case File</strong> · 2020년 jQuery로 만든 첫 팬 사이트를 2026년에 처음부터 다시 지었습니다.
-        <a href={LINKS.repo} target="_blank" rel="noopener">GitHub</a>
       </p>
       <p>
         「나이브스 아웃」과 이 페이지에 쓰인 영화 이미지·예고편의 권리는 Lionsgate, MRC, T-Street 및 각 권리자에게 있습니다. 이 사이트는 제작사와 관계없는
@@ -47,9 +45,6 @@ import logo from "../assets/brand/logo-stacked.png";
   }
   .footer__text strong {
     color: var(--text-dim);
-  }
-  .footer__text a {
-    color: var(--gold);
   }
   @media (max-width: 820px) {
     .footer__inner {
