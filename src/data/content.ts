@@ -14,22 +14,18 @@ export const SECTIONS = [
 const stills = import.meta.glob<{ default: ImageMetadata }>("../assets/stills/*.jpg", { eager: true });
 const still = (name: string) => stills[`../assets/stills/${name}.jpg`].default;
 
+// Ten exhibits, in the order of the night and the inquiry that followed. (The 2020
+// gallery had near-duplicates — four knife-throne portraits, two of Ransom in the
+// study — and seventeen photos made the scroll-driven strip ten screens long.)
 export const EVIDENCE = [
   { src: still("family-portrait"), place: "응접실", caption: "트롬비 일가의 단체 초상. 가운데 의자에 할런이 앉아 있다." },
   { src: still("birthday-cake"), place: "식당", caption: "85번째 생일 케이크. 린다와 할런, 리처드." },
   { src: still("go-board"), place: "할런의 방", caption: "생일 밤, 할런과 마르타의 바둑 한 판." },
-  { src: still("drawing-room"), place: "응접실", caption: "응접실에 모인 가족들. 발치에는 할런의 개." },
   { src: still("front-lawn"), place: "저택 앞", caption: "메그, 조니, 린다, 리처드, 월트, 돈나, 제이콥." },
-  { src: still("foyer"), place: "현관 홀", caption: "와그너 경관과 엘리엇 경위, 마르타, 랜섬, 그리고 블랑." },
   { src: still("interview"), place: "서재", caption: "심문을 준비하는 엘리엇 경위와 와그너 경관, 블랑." },
-  { src: still("piano"), place: "서재", caption: "피아노 앞에 기대앉아 건반을 하나씩 누르는 블랑." },
-  { src: still("throne-blanc"), place: "서재", caption: "칼 왕좌 앞의 블랑." },
   { src: still("throne-linda"), place: "서재", caption: "칼 왕좌 앞의 린다." },
-  { src: still("throne-richard"), place: "서재", caption: "칼 왕좌 앞의 리처드." },
-  { src: still("throne-marta"), place: "서재", caption: "칼 왕좌 앞의 마르타." },
+  { src: still("piano"), place: "서재", caption: "피아노 앞에 기대앉아 건반을 하나씩 누르는 블랑." },
   { src: still("blanc-marta"), place: "서재", caption: "블랑과 마르타." },
-  { src: still("library"), place: "서재", caption: "블랑, 와그너, 랜섬, 엘리엇. 늦게 도착한 손자." },
-  { src: still("ransom-study"), place: "서재", caption: "할아버지의 서재에 앉은 랜섬." },
   { src: still("ransom-sweater"), place: "저택 밖", caption: "랜섬과, 영화보다 유명해진 그 꽈배기 니트." },
   { src: still("woods"), place: "저택 밖", caption: "숲길을 걷는 블랑과 엘리엇 경위." },
 ];

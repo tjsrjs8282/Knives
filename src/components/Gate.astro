@@ -2,32 +2,78 @@
 /**
  * The case file on the desk. Choosing "with sound" or "silently" is the user
  * gesture that unlocks Web Audio; the hero loads behind the folder meanwhile.
+ *
+ * A real folder: a back panel (with the tab) holding the first page, and a
+ * two-sided cover that swings open on its spine — the inside of the cover is
+ * the exhibit index. src/scripts/gate.ts opens it.
  */
+const INDEX = [
+  ["A", "The Case"],
+  ["B", "Suspects"],
+  ["C", "Evidence"],
+  ["D", "Trailers"],
+  ["E", "The Blanc Files"],
+  ["F", "The Office"],
+];
 ---
 
 <div class="gate" data-gate role="dialog" aria-modal="true" aria-labelledby="gate-title" aria-describedby="gate-desc">
   <div class="gate__inner">
     <div class="folder" data-folder>
-      <div class="folder__page" aria-hidden="true">
-        <span class="folder__clip"></span>
-        <p class="folder__typed">THE DECEASED WAS FOUND IN HIS ROOM<br />THE MORNING AFTER HIS 85TH BIRTHDAY.</p>
-      </div>
-      <div class="folder__cover" data-folder-cover>
-        <span class="folder__tab">CASE No. 1127</span>
-        <p class="folder__estate">THROMBEY ESTATE · CASE FILE</p>
-        <p class="folder__title" id="gate-title">
-          <span class="folder__kicker">사건 파일</span>
-          할런 트롬비<br />사망 사건
-        </p>
-        <dl class="folder__fields">
-          <div><dt>VICTIM</dt><dd>Harlan Thrombey, 85</dd></div>
-          <div><dt>CAUSE</dt><dd>Under investigation</dd></div>
-          <div><dt>SUSPECTS</dt><dd>Everyone</dd></div>
-        </dl>
-        <span class="stamp folder__stamp">Confidential</span>
-        <div class="folder__load" aria-hidden="true">
-          <span class="folder__load-bar"><span data-gate-bar></span></span>
-          <span class="folder__load-text"><span data-gate-status>증거 수집 중</span> <span data-gate-percent>0</span>%</span>
+      <div class="folder__book" data-folder-book>
+        <div class="folder__back" aria-hidden="true">
+          <span class="folder__tab">CASE No. 1127</span>
+        </div>
+
+        <div class="folder__page" aria-hidden="true">
+          <span class="folder__clip"></span>
+          <p class="folder__page-head"><span>THROMBEY ESTATE</span><span>No. 1127-A</span></p>
+          <p class="folder__page-title">STATEMENT OF FACTS</p>
+          <p class="folder__typed">THE DECEASED WAS FOUND IN HIS ROOM THE MORNING AFTER HIS 85TH BIRTHDAY.</p>
+          <dl class="folder__log">
+            <div><dt>FOUND BY</dt><dd>THE HOUSEKEEPER</dd></div>
+            <div><dt>POLICE</dt><dd>SUICIDE</dd></div>
+            <div><dt>INQUIRY</dt><dd>B. BLANC, PRIVATE</dd></div>
+            <div><dt>CLIENT</dt><dd><span class="folder__redacted"></span></dd></div>
+          </dl>
+          <span class="stamp folder__reopened">Reopened</span>
+        </div>
+
+        <!-- the cover's shadow on the papers, lifting away as it opens -->
+        <span class="folder__cast" aria-hidden="true"></span>
+
+        <div class="folder__cover" data-folder-cover>
+          <div class="folder__face folder__face--front">
+            <p class="folder__estate">THROMBEY ESTATE · CASE FILE</p>
+            <p class="folder__title" id="gate-title">
+              <span class="folder__kicker">사건 파일</span>
+              할런 트롬비<br />사망 사건
+            </p>
+            <dl class="folder__fields">
+              <div><dt>VICTIM</dt><dd>Harlan Thrombey, 85</dd></div>
+              <div><dt>CAUSE</dt><dd>Under investigation</dd></div>
+              <div><dt>SUSPECTS</dt><dd>Everyone</dd></div>
+            </dl>
+            <span class="stamp folder__stamp">Confidential</span>
+            <div class="folder__load" aria-hidden="true">
+              <span class="folder__load-bar"><span data-gate-bar></span></span>
+              <span class="folder__load-text"><span data-gate-status>증거 수집 중</span> <span data-gate-percent>0</span>%</span>
+            </div>
+          </div>
+          <div class="folder__face folder__face--inside" aria-hidden="true">
+            <p class="folder__index-head">EXHIBIT INDEX</p>
+            <ol class="folder__index">
+              {
+                INDEX.map(([letter, name]) => (
+                  <li>
+                    <span>{letter}</span>
+                    {name}
+                  </li>
+                ))
+              }
+            </ol>
+            <p class="folder__index-note">DO NOT REMOVE FROM FILE</p>
+          </div>
         </div>
       </div>
     </div>
@@ -75,67 +121,39 @@
     max-width: 520px;
   }
 
-  /* ── the folder ── */
+  /* ── the folder ──
+     .folder sizes it; .folder__book is what moves (and holds the perspective, so
+     the cover's swing is projected exactly once); the cover is a two-sided card. */
   .folder {
     position: relative;
     /* height = width / 0.8, so the 50vh cap keeps it on short screens */
     width: min(420px, 84vw, 50vh);
     aspect-ratio: 0.8;
-    perspective: 1600px;
   }
-  .folder__page,
-  .folder__cover {
+  .folder__book {
+    position: absolute;
+    inset: 0;
+    /* overwritten from the folder's real width when it opens (src/scripts/gate.ts) */
+    perspective: 1800px;
+    perspective-origin: 50% 38%;
+  }
+  .folder__back,
+  .folder__cast,
+  .folder__cover,
+  .folder__face {
     position: absolute;
     inset: 0;
     border-radius: 3px 10px 10px 3px;
   }
-  .folder__page {
-    inset: 10px 6px 6px 10px;
-    padding: 28px 24px;
-    background: #f6efdf;
-    color: var(--paper-ink);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
-  }
-  .folder__clip {
-    position: absolute;
-    top: -8px;
-    left: 36px;
-    width: 18px;
-    height: 54px;
-    border: 3px solid #9b9b9b;
-    border-radius: 9px;
-  }
-  .folder__typed {
-    margin-top: 40px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    line-height: 1.8;
-  }
-  .folder__cover {
-    display: flex;
-    flex-direction: column;
-    padding: clamp(22px, 5vw, 34px);
-    color: var(--paper-ink);
+  /* the back panel: what the papers lie on, and the tab that peeks over the cover */
+  .folder__back {
     background:
-      linear-gradient(160deg, rgba(255, 255, 255, 0.22), transparent 40%),
-      linear-gradient(0deg, rgba(110, 76, 30, 0.12), transparent 30%),
-      #dcc48f;
+      linear-gradient(90deg, rgba(90, 62, 24, 0.22), transparent 7%),
+      linear-gradient(200deg, rgba(255, 255, 255, 0.16), transparent 45%),
+      #d6bc85;
     box-shadow:
       inset 0 0 0 1px rgba(80, 55, 20, 0.25),
       0 30px 70px rgba(0, 0, 0, 0.6);
-    transform-origin: left center;
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
-  }
-  .folder__cover::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background-image: var(--grain);
-    opacity: 0.18;
-    mix-blend-mode: multiply;
-    pointer-events: none;
   }
   .folder__tab {
     position: absolute;
@@ -144,10 +162,187 @@
     padding: 6px 16px 4px;
     border-radius: 6px 6px 0 0;
     background: #dcc48f;
+    color: var(--paper-ink);
     font-family: var(--font-mono);
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.12em;
+  }
+
+  /* the first page: typed, clipped, a little skewed on the panel */
+  .folder__page {
+    position: absolute;
+    inset: 12px 12px 10px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9em;
+    /* the text starts below the paper clip */
+    padding: clamp(40px, 11%, 52px) clamp(18px, 7%, 28px) clamp(20px, 6%, 30px);
+    border-radius: 2px;
+    background:
+      linear-gradient(170deg, rgba(255, 255, 255, 0.5), transparent 35%),
+      #f6efdf;
+    color: var(--paper-ink);
+    font-family: var(--font-mono);
+    font-size: clamp(9.5px, 2.9vw, 12px);
+    line-height: 1.7;
+    box-shadow:
+      0 1px 2px rgba(40, 26, 8, 0.25),
+      0 8px 22px rgba(40, 26, 8, 0.28);
+    rotate: 0.6deg;
+  }
+  .folder__clip {
+    position: absolute;
+    top: -9px;
+    left: 30px;
+    width: 18px;
+    height: 54px;
+    border: 3px solid #9b9b9b;
+    border-radius: 9px;
+    box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.18);
+  }
+  .folder__page-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 0.7em;
+    border-bottom: 1px solid rgba(43, 32, 23, 0.45);
+    letter-spacing: 0.14em;
+    color: var(--paper-dim);
+  }
+  .folder__page-title {
+    margin-top: 0.4em;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+  }
+  .folder__log {
+    display: grid;
+    gap: 0.2em;
+  }
+  .folder__log div {
+    display: grid;
+    grid-template-columns: 10ch 1fr;
+    gap: 1ch;
+  }
+  .folder__log dt {
+    color: var(--paper-dim);
+  }
+  .folder__redacted {
+    display: inline-block;
+    width: 9ch;
+    height: 1.05em;
+    vertical-align: -0.15em;
+    background: var(--paper-ink);
+  }
+  .folder__reopened {
+    align-self: flex-end;
+    margin-top: auto;
+    font-size: clamp(12px, 3.2vw, 16px);
+    rotate: -9deg;
+  }
+
+  .folder__cast {
+    pointer-events: none;
+    background: linear-gradient(90deg, rgba(24, 14, 4, 0.7), rgba(24, 14, 4, 0.32) 55%, rgba(24, 14, 4, 0.08));
+    opacity: var(--cast, 1);
+  }
+
+  /* the cover: swings on its spine; each face hides when it turns away */
+  .folder__cover {
+    transform-origin: left center;
+    transform-style: preserve-3d;
+  }
+  .folder__face {
+    /* own stacking context: the shade, grain and stamp blend inside the face */
+    isolation: isolate;
+    color: var(--paper-ink);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  .folder__face::before,
+  .folder__face::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .folder__face::after {
+    background-image: var(--grain);
+    opacity: 0.18;
+    mix-blend-mode: multiply;
+  }
+  /* light: a face darkens as it turns away from the lamp */
+  .folder__face::before {
+    z-index: 1;
+    background: linear-gradient(90deg, rgba(20, 12, 4, 0.75), rgba(20, 12, 4, 0.55));
+  }
+  .folder__face--front::before {
+    opacity: var(--front-shade, 0);
+  }
+  .folder__face--inside::before {
+    opacity: var(--inside-shade, 0);
+  }
+  .folder__face--front {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(22px, 5vw, 34px);
+    transform: rotateY(0deg);
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, 0.22), transparent 40%),
+      linear-gradient(0deg, rgba(110, 76, 30, 0.12), transparent 30%),
+      #dcc48f;
+    box-shadow: inset 0 0 0 1px rgba(80, 55, 20, 0.25);
+  }
+  /* the inside of the cover reads normally once it lies open on the left */
+  .folder__face--inside {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: clamp(24px, 6%, 36px) clamp(20px, 8%, 34px);
+    border-radius: 10px 3px 3px 10px;
+    transform: rotateY(180deg);
+    background:
+      radial-gradient(circle at 72% 78%, transparent 34px, rgba(120, 72, 26, 0.16) 35px, rgba(120, 72, 26, 0.05) 39px, transparent 41px),
+      linear-gradient(270deg, rgba(90, 62, 24, 0.22), transparent 7%),
+      linear-gradient(200deg, rgba(255, 255, 255, 0.2), transparent 45%),
+      #e0ca96;
+    box-shadow:
+      inset 0 0 0 1px rgba(80, 55, 20, 0.22),
+      0 24px 50px rgba(0, 0, 0, 0.45);
+    font-family: var(--font-mono);
+    font-size: clamp(10px, 3vw, 13px);
+  }
+  .folder__index-head {
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(43, 32, 23, 0.6);
+    font-weight: 700;
+    letter-spacing: 0.24em;
+  }
+  .folder__index {
+    display: grid;
+    gap: 0.35em;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .folder__index li {
+    display: flex;
+    gap: 1.4ch;
+    padding-bottom: 0.35em;
+    border-bottom: 1px dashed rgba(43, 32, 23, 0.25);
+  }
+  .folder__index span {
+    font-weight: 700;
+    color: var(--blood);
+  }
+  .folder__index-note {
+    margin-top: auto;
+    font-size: 0.82em;
+    letter-spacing: 0.2em;
+    color: var(--paper-dim);
   }
   .folder__estate {
     font-family: var(--font-mono);
@@ -231,5 +426,23 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 12px;
+  }
+
+  /* Chosen: the buttons step back at once (a compositor fade, smooth even while the
+     page renders behind), and nothing the opening folder sweeps over can scroll. */
+  .gate.is-leaving {
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .gate__desc,
+  .gate__actions {
+    transition:
+      opacity 0.35s var(--ease-out),
+      translate 0.35s var(--ease-out);
+  }
+  .gate.is-leaving .gate__desc,
+  .gate.is-leaving .gate__actions {
+    opacity: 0;
+    translate: 0 10px;
   }
 </style>

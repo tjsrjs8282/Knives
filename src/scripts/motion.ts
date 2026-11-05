@@ -52,8 +52,9 @@ export function initMotion() {
   ctx?.revert();
   ctx = gsap.context(() => {
     heroScroll();
-    caseFile();
+    const unCase = caseFile();
     evidenceTrack();
+    return () => unCase?.();
   });
   reveals();
   ScrollTrigger.refresh();
@@ -104,6 +105,7 @@ function caseFile() {
   };
   layout();
   ScrollTrigger.addEventListener("refreshInit", layout);
+  const off = () => ScrollTrigger.removeEventListener("refreshInit", layout);
 
   const split = SplitText.create(text, { type: "words", wordsClass: "word", aria: "hidden" });
   gsap.set(split.words, { opacity: 0.14 });
@@ -133,7 +135,15 @@ function caseFile() {
     .to(split.words, { opacity: 1, stagger: { amount: 0.3 }, duration: 0.05 }, 0.54)
     .from(".case__blood", { opacity: 0, scale: 0.7, duration: 0.12, ease: "back.out(2)" }, 0.62)
     .to({}, { duration: 0.14 }); // hold the finished report before the pin lets go
+  return off;
 }
+
+/**
+ * The strip travels this many times faster than the page scrolls: one wheel notch
+ * moves it about a third of a photo, and the whole file passes in ~2.5 screens
+ * instead of the ten it took when the pin was as long as the strip.
+ */
+const EVIDENCE_SPEED = 1.8;
 
 /** Desktop: the page scroll pans the evidence strip. Touch keeps native swiping. */
 function evidenceTrack() {
@@ -145,12 +155,27 @@ function evidenceTrack() {
   mm.add("(min-width: 900px)", () => {
     viewport.classList.add("is-driven");
     const distance = () => Math.max(0, track.scrollWidth - viewport.clientWidth);
+    // the counter under the strip follows the strip itself (scrub included), not the scrollbar
+    const report = function (this: gsap.core.Tween) {
+      viewport.dispatchEvent(new CustomEvent("exhibit:progress", { detail: this.progress() }));
+    };
     gsap.to(track, {
       x: () => -distance(),
       ease: "none",
-      scrollTrigger: { trigger: pin, start: "top top", end: () => `+=${distance()}`, pin: true, scrub: 0.5, invalidateOnRefresh: true },
+      onUpdate: report,
+      scrollTrigger: {
+        trigger: pin,
+        start: "top top",
+        end: () => `+=${Math.round(distance() / EVIDENCE_SPEED)}`,
+        pin: true,
+        scrub: 0.6,
+        invalidateOnRefresh: true,
+      },
     });
-    return () => viewport.classList.remove("is-driven");
+    return () => {
+      viewport.classList.remove("is-driven");
+      viewport.dispatchEvent(new CustomEvent("exhibit:progress", { detail: null }));
+    };
   });
 }
 

@@ -472,6 +472,16 @@ const houseSizes = "(max-width: 760px) 100vw, min(1480px, 100vw)";
   .dossier[hidden] {
     display: none;
   }
+  /* turning to another file */
+  .dossier:not([hidden]) {
+    animation: dossier-in 0.4s var(--ease-out);
+  }
+  @keyframes dossier-in {
+    from {
+      opacity: 0;
+      translate: 0 8px;
+    }
+  }
   .dossier__visual {
     position: relative;
   }

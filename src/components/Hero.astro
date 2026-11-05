@@ -127,6 +127,10 @@ import knifeDown from "../assets/props/knife-right.png";
   .hero__title {
     width: min(92vw, 980px);
   }
+  /* focused (from script) when the folder opens: a landmark, not a control */
+  .hero__title:focus {
+    outline: none;
+  }
   .hero__logo {
     display: flex;
     align-items: flex-end;

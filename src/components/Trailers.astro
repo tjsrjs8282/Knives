@@ -61,6 +61,10 @@ import donut from "../assets/props/donut.png";
     position: sticky;
     top: calc(var(--hud-h) + 32px);
   }
+  /* the aside is a narrow column: sized so "돌려 보죠" keeps to one line */
+  .trailers__aside .heading__title {
+    font-size: clamp(38px, 5.2vw, 72px);
+  }
 
   .donut {
     display: flex;

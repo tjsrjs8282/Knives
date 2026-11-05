@@ -101,6 +101,9 @@ export function initSuspects() {
   // ── dossiers ──
   let current = 0;
   const ctl = bindDialog(dialog);
+  // Lazy pictures in the closed dialog only load once shown: fetch a file's photos ahead.
+  const preload = (id: string | undefined) =>
+    dialog.querySelectorAll<HTMLImageElement>(`[data-dossier="${id}"] img`).forEach((img) => (img.loading = "eager"));
   const show = (i: number) => {
     current = (i + ids.length) % ids.length;
     const id = ids[current];
@@ -108,7 +111,14 @@ export function initSuspects() {
     dialog.setAttribute("aria-labelledby", `dossier-${id}`);
     dialog.scrollTop = 0;
     mark(id);
+    // the next and previous files are one key press away
+    preload(ids[(current + 1) % ids.length]);
+    preload(ids[(current - 1 + ids.length) % ids.length]);
   };
+  document.addEventListener("pointerover", (e) => {
+    const id = (e.target as Element).closest<HTMLElement>("[data-suspect]")?.dataset.suspect;
+    if (id) preload(id);
+  });
   const mark = (id: string) => {
     const first = !done.has(id);
     done.add(id);

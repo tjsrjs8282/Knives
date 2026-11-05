@@ -12,7 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const root = document.documentElement;
 root.classList.add("app-ready");
-let reduce = reducedMotion();
+const reduce = reducedMotion();
 
 /** Run when the main thread is free — the gate must stay responsive on slow phones. */
 const idle = (fn: () => void) => {
@@ -31,7 +31,6 @@ const applySound = (on: boolean) => {
   if (on) audio.play("select");
 };
 const applyMotion = async (on: boolean) => {
-  reduce = !on;
   root.classList.toggle("reduce-motion", !on);
   root.classList.toggle("js-motion", on);
   if (on) {
@@ -68,6 +67,8 @@ const heroVideo = initHeroVideo();
 // Everything below the hero wakes up once fonts have settled the layout.
 let entered: () => void;
 const enteredOnce = new Promise<void>((r) => (entered = r));
+let scenesBuilt: () => void;
+const scenesReady = new Promise<void>((r) => (scenesBuilt = r));
 document.fonts.ready.then(() =>
   idle(async () => {
     const [{ initSuspects }, { initEvidence }, { initOffice }] = await Promise.all([import("./suspects"), import("./evidence"), import("./office")]);
@@ -88,6 +89,7 @@ for (const type of ["wheel", "touchmove", "keydown"]) addEventListener(type, () 
 enteredOnce.then(() =>
   requestAnimationFrame(async () => {
     (await motionModule)?.initMotion();
+    scenesBuilt();
     // A shared #anchor link keeps its place while pins, images and type settle — every
     // change in the page's height re-aims it — until the reader takes over.
     const target = deepLink();
@@ -98,27 +100,38 @@ enteredOnce.then(() =>
       });
       follow.observe(document.body);
     }
+    // Late fonts re-measure the pins — but never while the folder is still opening.
     let timer = 0;
+    const refresh = () => {
+      if (root.classList.contains("is-gated")) timer = window.setTimeout(refresh, 300);
+      else ScrollTrigger.refresh();
+    };
     document.fonts.addEventListener("loadingdone", () => {
       clearTimeout(timer);
-      timer = window.setTimeout(() => ScrollTrigger.refresh(), 150);
+      timer = window.setTimeout(refresh, 150);
     });
   }),
 );
 
 initGate(async (withSound) => {
+  // Still inside the click: this call is the gesture that unlocks Web Audio.
+  // The buffers get a moment so the chime actually lands, but nothing waits on it.
+  const sound = withSound ? Promise.race([audio.setEnabled(true), new Promise((r) => setTimeout(r, 900))]) : null;
+  prefs.set("sound", withSound);
   const motion = await motionModule;
   const playIntro = motion?.prepareHeroIntro() ?? (() => {});
   root.classList.add("is-entered");
   entered();
-  prefs.set("sound", withSound);
   heroVideo.start();
-  lenis?.start();
-  if (withSound) {
-    // Give the buffers a moment so the chime and the blade actually land.
-    await Promise.race([audio.setEnabled(true), new Promise((r) => setTimeout(r, 900))]);
+  void sound?.then(() => {
     audio.play("enter");
     if (prefs.get("music")) void bgm.set(true);
-  }
-  window.setTimeout(playIntro, reduce ? 0 : 250);
+  });
+  // The gate opens the folder once the scroll scenes exist, and calls this back
+  // the moment the house starts to show through.
+  await scenesReady;
+  return () => {
+    lenis?.start();
+    playIntro();
+  };
 });

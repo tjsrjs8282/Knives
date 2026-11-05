@@ -5,8 +5,9 @@ import { EVIDENCE } from "../data/content";
 import knifeLeft from "../assets/props/knife-left.png";
 import knifeRight from "../assets/props/knife-right.png";
 
-const TILTS = [-2.2, 1.4, -0.8, 2, -1.6, 0.9, -2.4, 1.8, -1.1, 2.3, -0.6, 1.2, -1.9, 0.7, -1.4, 2.1, -0.9];
-const tag = (i: number) => `EXHIBIT ${String(i + 1).padStart(2, "0")}`;
+const TILTS = [-2.2, 1.4, -0.8, 2, -1.6, 0.9, -2.4, 1.8, -1.1, 2.3];
+const pad = (n: number) => String(n).padStart(2, "0");
+const tag = (i: number) => `EXHIBIT ${pad(i + 1)}`;
 ---
 
 <section class="evidence section" id="evidence" aria-labelledby="evidence-title">
@@ -14,8 +15,8 @@ const tag = (i: number) => `EXHIBIT ${String(i + 1).padStart(2, "0")}`;
     <div class="container">
       <header class="heading" data-reveal>
         <p class="heading__label">Exhibit C · 현장 사진</p>
-        <h2 class="heading__title" id="evidence-title">증거물 열일곱 장</h2>
-        <p class="heading__en" lang="en">Exhibits 01 to 17, as filed.</p>
+        <h2 class="heading__title" id="evidence-title">증거물 열 장</h2>
+        <p class="heading__en" lang="en">Exhibits 01 to {pad(EVIDENCE.length)}, as filed.</p>
       </header>
     </div>
 
@@ -37,10 +38,15 @@ const tag = (i: number) => `EXHIBIT ${String(i + 1).padStart(2, "0")}`;
         }
       </ol>
     </div>
-    <p class="evidence__hint" aria-hidden="true">
-      <span class="only-fine">스크롤해서 넘기기 · 사진을 누르면 크게</span>
-      <span class="only-coarse">옆으로 밀어서 넘기기 · 사진을 누르면 크게</span>
-    </p>
+    <!-- where you are in the file: the strip's counter and how much of it is left -->
+    <div class="evidence__foot container" aria-hidden="true">
+      <p class="evidence__count"><span data-evidence-index>01</span> / {pad(EVIDENCE.length)}</p>
+      <span class="evidence__bar"><span data-evidence-bar></span></span>
+      <p class="evidence__hint">
+        <span class="only-fine">스크롤해서 넘기기 · 사진을 누르면 크게</span>
+        <span class="only-coarse">옆으로 밀어서 넘기기 · 사진을 누르면 크게</span>
+      </p>
+    </div>
   </div>
 </section>
 
@@ -112,7 +118,7 @@ const tag = (i: number) => `EXHIBIT ${String(i + 1).padStart(2, "0")}`;
     padding-inline: var(--gutter);
   }
   .exhibit {
-    width: min(78vw, 34vw + 120px, 560px);
+    width: min(78vw, 30vw + 96px, 500px);
     scroll-snap-align: center;
     rotate: var(--tilt);
     transition: rotate 0.5s var(--ease-out);
@@ -162,12 +168,48 @@ const tag = (i: number) => `EXHIBIT ${String(i + 1).padStart(2, "0")}`;
     letter-spacing: 0.12em;
     color: var(--gold);
   }
+  .evidence__foot {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 18px;
+    margin-top: 4px;
+  }
+  .evidence__count {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    color: var(--text-faint);
+  }
+  .evidence__count span {
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .evidence__bar {
+    height: 1px;
+    background: var(--line-soft);
+  }
+  .evidence__bar span {
+    display: block;
+    height: 100%;
+    background: var(--gold);
+    transform-origin: left;
+    transform: scaleX(var(--p, 0));
+  }
   .evidence__hint {
-    margin-top: 8px;
-    text-align: center;
     font-family: var(--font-ui);
     font-size: 13px;
     color: var(--text-faint);
+  }
+  @media (max-width: 760px) {
+    .evidence__foot {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 8px 14px;
+    }
+    .evidence__hint {
+      grid-column: 1 / -1;
+      text-align: center;
+    }
   }
   .only-coarse {
     display: none;
@@ -212,6 +254,16 @@ const tag = (i: number) => `EXHIBIT ${String(i + 1).padStart(2, "0")}`;
   }
   .lightbox__item[hidden] {
     display: none;
+  }
+  /* each photo develops in as it is shown (also on every step) */
+  .lightbox__item:not([hidden]) {
+    animation: exhibit-in 0.45s var(--ease-out);
+  }
+  @keyframes exhibit-in {
+    from {
+      opacity: 0;
+      scale: 0.985;
+    }
   }
   .lightbox__item :global(img) {
     width: auto;

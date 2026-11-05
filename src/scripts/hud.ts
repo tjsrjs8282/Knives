@@ -15,7 +15,11 @@ export function initHud() {
     const max = document.documentElement.scrollHeight - innerHeight;
     bar?.parentElement?.style.setProperty("--progress", String(max > 0 ? Math.min(1, scrollY / max) : 0));
     let current = "";
-    for (const s of sections) if (s.getBoundingClientRect().top < innerHeight * 0.4) current = s.id;
+    for (const s of sections) {
+      // Behind the closed folder the sections are not rendered (all-zero rects): skip them.
+      if (!s.getClientRects().length) continue;
+      if (s.getBoundingClientRect().top < innerHeight * 0.4) current = s.id;
+    }
     for (const a of links) {
       if (a.dataset.nav === current) a.setAttribute("aria-current", "true");
       else a.removeAttribute("aria-current");
